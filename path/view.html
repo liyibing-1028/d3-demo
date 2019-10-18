@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #phoneChart {
+      width: 600px;
+      height: 260px;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    #circle {
+      width: 260px;
+      height: 260px;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .path-area {
+      fill: #43BAFE;
+      fill-opacity: 0.3;
+    }
+    .path-line {
+      fill: #42EDF8;
+    }
+    .shadow {
+      box-shadow: 10px 10px 50px red;
+    }
+  </style>
+</head>
+<body>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+  <svg id="phoneChart">
+    <!-- 第一层 -->
+    <circle stroke="#E4A738" stroke-width="4" fill="none" cx="290" cy="125" r="75"/>
+    <!-- 第二层 -->
+    <circle stroke="#C5FF10" stroke-width="4" fill="none" cx="290" cy="125" r="60"/>
+    <!-- 第三层 -->
+    <circle stroke="#FFD738" stroke-width="8" fill="none" cx="290" cy="125" r="42"/>
+    <!-- 内心小环 -->
+    <!-- <circle stroke="#43BAFE" stroke-width="1" fill="none" cx="290" cy="125" r="15"/>
+    <circle stroke="#43BAFE" stroke-width="1" fill="none" cx="290" cy="125" r="10"/>
+    <circle stroke="#43BAFE" stroke-width="10" fill="none" cx="290" cy="125" r="1"/> -->
+    <!-- 左侧区域 -->
+    <path d="M80 250 L200 250 L250 210 C250 210,135 130,250 40 L250 40 L200 10 L80 10 C80 10,0 130,80 250 Z" class="path-area"></path>
+    <!-- 区域边框 -->
+    <path d="M50 230 L55 225 C55 225,5 145,55 35 L55 35 L50 30 C50 30,-5 130,50 230 Z" class="path-line"></path>
+    <!-- 右侧区域 -->
+    <path d="M380 250 L500 250 C500 250,580 130,500 10 L500 10 L380 10 L330 40 C330 40,445 120,330 210 L330 210 Z" class="path-area"></path>
+    <!-- 区域边框 -->
+    <path d="M530 230 C530 230,585 130,530 30 L530 30 L525 35 C525 35,575 120,525 225 L525 225 Z" class="path-line"></path>
+  </svg>
+  <svg id="circle"></svg>
+  <script>
+    let pie = d3.pie().value(function (d) { return d.num }).sort(null)
+    let arc = d3.arc()
+      .padAngle(0)
+      .padRadius(0)
+      .innerRadius((d) => {
+        return d.data.num
+      })
+      .outerRadius((d) => {
+        return d.data.num + d.data.size
+      })
+    let g = d3.select('#circle')
+      .append('g')
+      .attr('transform', 'translate(130, 130)')
+    let data = [{num: 75, size: 4, color: '#e4a738', end: Math.PI * 2}]
+
+    let color = d3.scaleLinear().range(['rgba(255, 0, 0, 0)', 'rgba(255, 0, 0, 0.13)', 'rgba(255, 0, 0, 0)']).domain([-1, 0, 1])
+    let radia = g.append('defs')
+      .append('radialGradient')
+      .attr('id', 'radial-gradient')
+    radia.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', color(-1))
+    radia.append('stop')
+      .attr('offset', '65%')
+      .attr('stop-color', color(0))
+    radia.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', color(1))
+
+    let circle = g.selectAll('.circle')
+      .data(pie(data))
+      .enter()
+      .append('g')
+      .attr('class', 'circle')
+    circle.append('path')
+      .transition()
+      .delay(0)
+      .duration(1000)
+      .attrTween('d', (d) => {
+        let interpolate = d3.interpolate(0, d.data.end)
+        return function (t) {
+          d.startAngle = 0
+          d.endAngle = interpolate(t)
+          return arc(d)
+        }
+      })
+      .attr('fill', '#e4a738')
+    circle.append('circle')
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", 110)
+      .attr('fill', 'url(#radial-gradient)')
+  
+    let len = 25
+    let ticks = []
+    for (let i = 1; i <= len; i++) {
+      ticks[i] = circle.append('line')
+    }
+    for (let i = 1; i <= len; i++) {
+      let x = 75 * Math.cos((360 * (i / len)) / 57.2958)
+      let y = 75 * Math.sin((360 * (i / len)) / 57.2958)
+      let x2 = 5 * Math.cos((360 * (i / len)) / 57.2958)
+      let y2 = 5 * Math.sin((360 * (i / len)) / 57.2958)
+      ticks[i].attr('class', 'tick' + i)
+        .attr('x1', x - x2)
+        .attr('y1', y - y2)
+        .attr('x2', x)
+        .attr('y2', y)
+        .attr('stroke', '#e4a738')
+        .attr('stroke-width', '2px')
+    }
+  </script>
+</body>
+</html>

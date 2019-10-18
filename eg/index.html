@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    div {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: #369
+    }
+  </style>
+</head>
+
+<body>
+  <div></div>
+  <script>
+    window.onload = function () {
+      var oDiv = document.getElementsByTagName("div")[0];
+
+      /*鼠标点击的位置距离DIV左边的距离 */
+      var disX = 0;
+      /*鼠标点击的位置距离DIV顶部的距离*/
+      var disY = 0;
+      oDiv.onmousedown = function () {
+        var e = e || window.event;
+        disX = e.clientX - oDiv.offsetLeft;
+        disY = e.clientY - oDiv.offsetTop;
+
+        console.log(e.clientX, e.clientY, disX, disY)
+        document.onmousemove = function (e) {
+          var e = e || window.event;
+          // 横轴坐标
+          var leftX = e.clientX - disX;
+          // 纵轴坐标
+          var topY = e.clientY - disY;
+
+          if (leftX < 0) {
+            leftX = 0;
+          }
+          /* 获取浏览器视口大小 document.document.documentElement.clientWidth*/
+          else if (leftX > document.documentElement.clientWidth - oDiv.offsetWidth) {
+            leftX = document.document.documentElement.clientWidth - oDiv.offsetWidth;
+          }
+
+          if (topY < 0) {
+            topY = 0;
+          } else if (topY > document.documentElement.clientHeight - oDiv.offsetHeight) {
+            topY = document.documentElement.clientHeight - oDiv.offsetHeight;
+          }
+          oDiv.style.left = leftX + "px";
+          oDiv.style.top = topY + "px";
+        }
+        document.onmouseup = function () {
+          document.onmousemove = null;
+          document.onmouseup = null;
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>

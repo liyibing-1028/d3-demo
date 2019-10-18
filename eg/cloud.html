@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <script src="./node_modules/d3/dist/d3.min.js"></script>
+  <script src="./node_modules/d3.layout.cloud/index.js"></script>
+  <style>
+   body {
+   background-color: lightgrey;
+     }
+
+   #layCloud {
+    width: 1000px;
+    height: 800px;
+    position: center;
+     }
+      </style>
+</head>
+
+<body>
+  <!-- <svg width="960" height="500"></svg> -->
+  <div id="layCloud"></div>
+  <script>
+    let wordListMock = [
+      '当代', '中国宪法制度', '是', '我们党领导人民', '长期奋斗', '历史逻辑', '理论逻辑', '实践逻辑', '的必然结果',
+      '现行宪法', '颁布以来', '在改革开放', '和社会主义现代化建设', '的历史进程中', '在我们党治国理政实践中',
+      '发挥了', '十分重要的作用', '实践证明', '我国宪法是符合国情', '符合实际', '符合时代发展要求的好宪法',
+      '是充分体现人民共同意志', '充分保障人民民主权利', '充分维护人民', '根本利益的好宪法', '是推动国家发展进步',
+      '保证人民创造幸福生活', '保障中华民族', '实现伟大复兴的好宪法', '是我们国家', '和人民经受住各种困难', '和风险考验',
+      '始终沿着', '中国特色社会主义道路', '前进的根本法治保障。', '中国宪法制度', '是', '我们党领导人民', '长期奋斗', '历史逻辑', '理论逻辑', '实践逻辑', '的必然结果',
+      '现行宪法', '颁布以来', '在改革开放', '和社会主义现代化建设', '的历史进程中', '在我们党治国理政实践中',
+      '发挥了', '十分重要的作用', '实践证明', '我国宪法是符合国情', '符合实际', '符合时代发展要求的好宪法',
+      '是充分体现人民共同意志', '充分保障人民民主权利', '充分维护人民', '根本利益的好宪法', '是推动国家发展进步',
+      '保证人民创造幸福生活', '保障中华民族', '实现伟大复兴的好宪法', '是我们国家', '和人民经受住各种困难', '和风险考验',
+      '始终沿着', '中国特色社会主义道路', '前进的根本法治保障。', '中国宪法制度', '是', '我们党领导人民', '长期奋斗', '历史逻辑', '理论逻辑', '实践逻辑', '的必然结果',
+      '现行宪法', '颁布以来', '在改革开放', '和社会主义现代化建设', '的历史进程中', '在我们党治国理政实践中',
+      '发挥了', '十分重要的作用', '实践证明', '我国宪法是符合国情', '符合实际', '符合时代发展要求的好宪法',
+      '是充分体现人民共同意志', '充分保障人民民主权利', '充分维护人民', '根本利益的好宪法', '是推动国家发展进步',
+      '保证人民创造幸福生活', '保障中华民族', '实现伟大复兴的好宪法', '是我们国家', '和人民经受住各种困难', '和风险考验',
+      '始终沿着', '中国特色社会主义道路', '前进的根本法治保障。'
+    ]
+    let w = 1000
+    let h = 800
+    let wordFreqTotal = 0
+    function layoutCloud () {
+      let data = wordListMock
+      d3.select('svg').remove()
+      d3.scaleOrdinal(d3.schemeCategory20)
+      let fill = d3.scaleOrdinal(d3.schemeCategory20)
+      let layout = d3.layout.cloud().size([w, h])
+      .words(data.map(function (d) {
+        return {
+          text: d,
+          size: parseInt(Math.random() * 20) < 12 ? 12 : parseInt(Math.random() * 20)
+        }
+      }))
+      .rotate(function () {
+        return ~~(Math.random() * 2) * 30
+      })
+      .font('Impact')
+      .fontSize(function (d) {
+        return d.size
+      })
+      .spiral('archimedean')
+      .on('end', draw)
+      layout.start()
+      function draw (words) {
+        d3.select('#layCloud').append('svg')
+        .attr('width', w)
+        .attr('height', h)
+        .append('g')
+        .attr('transform', `translate(${w / 2}, ${h / 2})`)
+        .selectAll('text')
+        .data(words)
+        .enter().append('text')
+        .style('font-size', function (d) {
+          return d.size + 'px'
+        })
+        .style('font-family', 'Impact')
+        .style('fill', function (d, i) { return fill(i) })
+        .attr('text-anchor', 'middle')
+        .attr('transform', function (d) {
+          return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')'
+        })
+        .text(function (d) {
+          return d.text
+        })
+      }
+    }
+    layoutCloud()
+  </script>
+</body>

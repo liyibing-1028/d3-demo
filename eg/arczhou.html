@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .label {
+            font-size: 10px;
+            text-anchor: middle;
+        }
+
+        .tooltip{
+            position: absolute;
+            width: 120px;
+            height: 50px;
+            font-family: simsun;
+            font-size: 14px;
+            text-align: center;
+            color: white;
+            border-width: 2px solid black;
+            background-color: black;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<style>
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        position: relative;
+    }
+    #chart {
+      max-width: 600px;
+      max-height: 400px;
+    }
+    svg {
+        border: 1px solid;
+    }
+    </style>
+</body>
+</html>
+<script>
+        width = 300
+        height = 300
+        let arr = ['一','二','三','四','五','六','七','八','九','十','十一','十二']
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(150,150)")
+    let data = [
+        {one: 1283, two: 3293, three: 892, four: 2389},
+        {one: 563, two: 1817, three: 452, four: 3891},
+        {one: 323, two: 1276, three: 981, four: 1652},
+        {one: 1233, two: 1872, three: 1272, four: 981},
+        {one: 983, two: 1781, three: 2872, four: 3126},
+        {one: 683, two: 781, three: 2172, four: 3839},
+        {one: 873, two: 992, three: 872, four: 1982},
+        {one: 583, two: 1762, three: 1625, four: 918},
+        {one: 1283, two: 761, three: 2212, four: 1872},
+        {one: 781, two: 562, three: 2623, four: 1287},
+        {one: 1562, two: 1672, three: 3762, four: 872},
+        {one: 1598, two: 762, three: 892, four: 2389}
+      ]
+    let numArr = []
+    data.forEach((item, index) => {
+        numArr.push(item.one + item.two + item.three + item.four)
+    })
+    let maxNum = Math.max.apply(null, numArr)
+    console.log(maxNum)
+    var _g = null
+    let pie = d3.pie()
+    let arc = function animateArc (deg, innerRadius) {
+        return d3.arc()
+            .startAngle((d, i) => {
+                return Math.PI * ((i * deg) / 180)
+            })
+            .endAngle((d, i) => {
+                return Math.PI * ((i * deg + 25) / 180)
+            })
+            .padAngle(0)
+            .padRadius(0)
+            .innerRadius((d, i) => {
+                return innerRadius
+            })
+            .outerRadius((d, i) => {
+                return innerRadius + 10
+            })
+    }
+    _g = svg.selectAll('g')
+        .data(pie(data))
+        .enter()
+        .append('g')
+        .attr('class', 'arc')
+    _g.append('path')
+        .attr('fill', (d) => {
+            let num = d.data.one + d.data.two + d.data.three + d.data.four
+            let outerNum = 'red'
+            if ((85 * num / maxNum) < 10) {
+                outerNum = 'rgba(0,0,0,0.3)'
+            }
+            return outerNum
+        })
+        .attr('d', arc(30, 5))
+    _g.append('path')
+        .attr('fill', (d) => {
+            let num = d.data.one + d.data.two + d.data.three + d.data.four
+            let outerNum = 'green'
+            if ((85 * num / maxNum) < 30) {
+                outerNum = 'rgba(0,0,0,0.3)'
+            }
+            return outerNum
+        })
+        .attr('d', arc(30, 20))
+    _g.append('path')
+        .attr('fill', (d) => {
+            let num = d.data.one + d.data.two + d.data.three + d.data.four
+            let outerNum = 'yellow'
+            if ((85 * num / maxNum) < 50) {
+                outerNum = 'rgba(0,0,0,0.3)'
+            }
+            return outerNum
+        })
+        .attr('d', arc(30, 50))
+    _g.append('path')
+        .attr('fill', (d) => {
+            let num = d.data.one + d.data.two + d.data.three + d.data.four
+            let outerNum = 'blue'
+            if ((85 * num / maxNum) < 70) {
+                outerNum = 'rgba(0,0,0,0.3)'
+            }
+            return outerNum
+        })
+        .attr('d', arc(30, 70))
+
+    animateText(30)
+
+    // let tooltip = d3.select('body')
+    //     .append('div')
+    //     .attr('class', 'tooltip')
+    //     .style("opacity",0)
+    // _g.on('mouseover', (d) => {
+    //     tooltip.style('left', '100px')
+    //         .style('top', '100px')
+    //         .style('opacity', 1)
+    //         .html('aaaaa')
+    // }).on('mousemove', () => {
+    //     tooltip.style('left', '500px')
+    //         .style('top', '150px')
+    // })
+    // .on('mouseout', () => {
+    //     tooltip.style('opacity', 0)
+    // })
+function animateText (deg) {
+    var label = d3.arc()
+        .startAngle((d, i) => {
+            return Math.PI * ((d.index * deg) / 180)
+        })
+        .endAngle((d, i) => {
+            return Math.PI * ((d.index * deg + 25) / 180)
+        })
+        .padAngle(0)
+        .padRadius(0)
+        .innerRadius((d, i) => {
+            let num = 120
+            if (d.index !== 0 && d.index !== 11) num = 130
+            return num
+        })
+        .outerRadius((d, i) => {
+            let num = 125
+            if (d.index !== 0 && d.index !== 11) num = 135
+            return num
+        })
+    return _g.append("text")
+            .attr("class", "label")
+            .attr("transform", function(d) {
+                return "translate(" + label.centroid(d) + ")"
+            })
+            .text(function(d) {
+                return arr[d.index] + '月'
+            });
+}
+function animateArc (deg, deg2, i, innerRadius, outerRadius) {
+      return d3.arc()
+          .startAngle(Math.PI * ((i * deg) / 180))
+          .endAngle(Math.PI * ((i * deg2 + 25) / 180))
+          .padAngle(0)
+          .padRadius(0)
+          .innerRadius(innerRadius)
+          .outerRadius(outerRadius)
+    }
+</script>
+
+
+<!-- let num = d.data.one + d.data.two + d.data.three + d.data.four
+let outerNum = innerRadius
+if (order === 1) {
+    if ((85 * num / maxNum) > 10) {
+    outerNum = innerRadius + 15
+    }
+    return setNum(outerNum)
+}
+if (order === 2) {
+    if ((85 * num / maxNum) > 30) {
+    outerNum = innerRadius + 15
+    }
+    return setNum(outerNum)
+}
+if (order === 3) {
+    if ((85 * num / maxNum) > 50) {
+    outerNum = innerRadius + 15
+    }
+    return setNum(outerNum)
+}
+if (order === 4) {
+    if ((85 * num / maxNum) > 70) {
+    outerNum = innerRadius + 15
+    }
+    return setNum(outerNum)
+} -->

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<svg width="960" height="500"></svg>
+<script src="./node_modules/d3/dist/d3.min.js"></script>
+<script>
+  let color = ['rgba(0,0,0,1)', '#597684']
+  let dataset = [3398, 1222]
+
+  var tau = 2 * Math.PI; // http://tauday.com/tau-manifesto
+  let pie = d3.pie()
+  var arc = d3.arc()
+    .innerRadius(100)
+    .outerRadius(140)
+    .startAngle(0)
+    .endAngle(30)
+    // .cornerRadius(50)
+
+  var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height")
+  let arcs = svg.selectAll('g')
+      .data(pie(dataset))
+      .enter()
+      .append('g')
+      .attr('transform', 'translate(' + 250 + ',' + 200 + ')')
+      
+  arcs.append('path')
+        .data({endAngle: 30})
+        .attr('fill', 'cyan')
+        .attr('d', arc)
+  var foreground = arcs.append('path')
+    .attr('fill', function (d, i) {
+      if (d.data === 0) {
+        color[1] = 'rgba(0,0,0,0.4)'
+      } else {
+        color[1] = '#597684'
+      }
+      return color[i]
+    })
+    .attr('d', arc)
+</script>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>css3d Demo2</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html, body {
+				height: 100%;
+				overflow: hidden;
+			}
+			#blocker {
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				height: 100%;
+			}
+      .element {
+        padding: 10px;
+				/* box-shadow: 0px 0px 12px rgba(0,255,255,0.5); */
+				/* border: 1px solid rgba(127,255,255,0.25); */
+				text-align: center;
+				cursor: default;
+			}
+			.element:hover {
+				/* box-shadow: 0px 0px 12px rgba(0,255,255,0.75); */
+			}
+      .element .symbol {
+        font-size: 30px;
+        font-weight: bold;
+        color: rgba(255,255,255,0.75);
+        text-shadow: 0 0 10px rgba(0,255,255,0.95);
+      }
+      #one,
+      #two,
+      #three,
+      #four,
+      #five,
+      #six {
+        color: coral;
+        font-size: 30px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 360px;
+      }
+      #five {
+        transform: rotateX(90deg) translateX(-180px) translateZ(360px) !important;
+      }
+      #six {
+        transform: rotateX(-90deg) translateX(-180px) translateZ(0) !important;
+      }
+		</style>
+	</head>
+	<body>
+		<script src="./three/three.min.js"></script>
+		<script src="./three/tween.min.js"></script>
+		<script src="./three/TrackballControls.js"></script>
+		<script src="./three/CSS3DRenderer.js"></script>
+
+		<div id="container"></div>
+		<div id="blocker"></div>
+
+		<script>
+			function setBox() {
+        var camera, scene, renderer;
+        var controls;
+        var Element = function ( id, x, y, z, ry ) {
+          var div = document.createElement( 'div' );
+          div.style.width = '360px';
+          div.style.height = '360px';
+          div.style.backgroundColor = 'rgba(0,0,0,0.2)';
+          div.setAttribute('id', id)
+          // var iframe = document.createElement( 'iframe' );
+          // iframe.style.width = '360px';
+          // iframe.style.height = '360px';
+          // iframe.style.border = '0px';
+          // div.appendChild( iframe );
+          var object = new THREE.CSS3DObject( div );
+          object.position.set( x, y, z );
+          object.rotation.y = ry;
+          return object;
+        };
+        init();
+        animate();
+        function init() {
+          var container = document.getElementById( 'container' );
+          camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );
+          camera.position.set( 500, 300, 750 );
+          scene = new THREE.Scene();
+          renderer = new THREE.CSS3DRenderer();
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          container.appendChild( renderer.domElement );
+          var group = new THREE.Group();
+          group.add( new Element( 'one', 0, 0, 180, 0 ) );
+          group.add( new Element( 'two', 180, 0, 0, Math.PI / 2 ) );
+          group.add( new Element( 'three', 0, 0, - 180, Math.PI ) );
+          group.add( new Element( 'four', -180, 0, 0, -Math.PI / 2 ) );
+          group.add( new Element( 'five', 180, 360, 0, Math.PI / 2 ) );
+          group.add( new Element( 'six', -180, -360, 0, Math.PI / 2 ) );
+          scene.add( group );
+          controls = new THREE.TrackballControls( camera );
+          controls.rotateSpeed = 4;
+          window.addEventListener( 'resize', onWindowResize, false );
+          // Block iframe events when dragging camera
+          var blocker = document.getElementById( 'blocker' );
+          blocker.style.display = 'none';
+          document.addEventListener( 'mousedown', function () {
+            blocker.style.display = '';
+          } );
+          document.addEventListener( 'mouseup', function () {
+            blocker.style.display = 'none';
+          } );
+        }
+        function onWindowResize() {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize( window.innerWidth, window.innerHeight );
+        }
+        function animate() {
+          requestAnimationFrame( animate );
+          controls.update();
+          renderer.render( scene, camera );
+        }
+      }
+      setBox()
+      setText('one')
+      function setText (ele) {
+        var table = [
+          {text: '快感', size: 30, content: '', x: 1, y: 7},
+          {text: '狼友', size: 30, content: '', x: 2, y: 7},
+          {text: '我草', size: 30, content: '', x: 3, y: 7},
+          {text: '打压', size: 30, content: '', x: 4, y: 7},
+          {text: '政变', size: 30, content: '', x: 5, y: 7},
+          {text: '救市', size: 30, content: '', x: 6, y: 7},
+          {text: '无耻', size: 30, content: '', x: 7, y: 7},
+          {text: '星相', size: 30, content: '', x: 8, y: 7},
+          {text: '民猪', size: 30, content: '', x: 9, y: 7},
+          {text: '淫女', size: 30, content: '', x: 10, y: 7},
+          {text: '点金', size: 30, content: '', x: 1, y: 8},
+          {text: '激情', size: 30, content: '', x: 2, y: 8},
+          {text: '炮友', size: 30, content: '', x: 3, y: 8},
+          {text: '示威', size: 30, content: '', x: 4, y: 8},
+          {text: '红灯', size: 30, content: '', x: 5, y: 8},
+          {text: '在线赌博', size: 70, content: '', x: 6, y: 8},
+          {text: '付费直播', size: 70, content: '', x: 7, y: 8},
+          {text: '福利网址', size: 70, content: '', x: 8, y: 8},
+          {text: '东京热', size: 50, content: '', x: 9, y: 8},
+          {text: '黑社会', size: 50, content: '', x: 10, y: 8},
+          {text: '恶势力', size: 50, content: '', x: 1, y: 9},
+          {text: '套路贷', size: 50, content: '', x: 2, y: 9},
+          {text: '学生妹', size: 50, content: '', x: 3, y: 9},
+          {text: '性骚扰', size: 50, content: '', x: 4, y: 9},
+          {text: '性取向', size: 50, content: '', x: 5, y: 9},
+          {text: '中宣部', size: 50, content: '', x: 6, y: 9},
+          {text: '中纪委', size: 50, content: '', x: 7, y: 9},
+          {text: '仿真枪', size: 50, content: '', x: 8, y: 9},
+          {text: '你他妈', size: 50, content: '', x: 9, y: 9},
+          {text: '你妈的', size: 50, content: '', x: 10, y: 9},
+          {text: '保监会', size: 50, content: '', x: 1, y: 10},
+          {text: '六合彩', size: 50, content: '', x: 2, y: 10},
+          {text: '共产党', size: 50, content: '', x: 3, y: 10},
+          {text: '党中央', size: 50, content: '', x: 4, y: 10},
+          {text: '反社会', size: 50, content: '', x: 5, y: 10},
+          {text: '台湾狗', size: 50, content: '', x: 6, y: 10},
+          {text: '反革命', size: 50, content: '', x: 7, y: 10},
+          {text: '红灯区', size: 50, content: '', x: 8, y: 10},
+          {text: '成人片', size: 50, content: '', x: 9, y: 10},
+          {text: '伊拉克', size: 50, content: '', x: 10, y: 10},
+          {text: '包二奶', size: 50, content: '', x: 1, y: 6},
+          {text: '低制', size: 30, content: '', x: 2, y: 6},
+          {text: '体位', size: 30, content: '', x: 3, y: 6},
+          {text: '何平', size: 30, content: '', x: 4, y: 6},
+          {text: '作爱', size: 30, content: '', x: 5, y: 6},
+          {text: '偷情', size: 30, content: '', x: 6, y: 6},
+          {text: '偷拍', size: 30, content: '', x: 7, y: 6},
+          {text: '傻比', size: 30, content: '', x: 8, y: 6},
+          {text: '八老', size: 30, content: '', x: 9, y: 6},
+          {text: '内裤', size: 30, content: '', x: 10, y: 6}
+        ]
+        var camera, scene, rend, erer;
+        var controls;
+        var objects = [];
+        var targets = { table: [] };
+        init();
+        animate();
+        function init() {
+          camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 10000 );
+          camera.position.z = 3000;
+          scene = new THREE.Scene();
+          // table
+          for ( var i = 0; i < table.length; i++ ) {
+            var element = document.createElement( 'div' );
+            element.className = 'element';
+            // element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
+            var symbol = document.createElement( 'div' );
+            symbol.className = 'symbol';
+            symbol.textContent = table[i].text;
+            element.appendChild( symbol );
+            // 初始化随机位置
+            var object = new THREE.CSS3DObject( element );
+            object.position.x = Math.random() * 4000 - 2000;
+            object.position.y = Math.random() * 4000 - 2000;
+            object.position.z = Math.random() * 4000 - 2000;
+            scene.add( object );
+            objects.push( object );
+            // 分布到指定位置
+            var object = new THREE.Object3D();
+            object.position.x = ( table[i].x * 50 ) - (window.innerWidth / 2) - 1000;
+            object.position.y = - ( table[i].y * 40 ) + (window.innerHeight / 2 - 200);
+            object.position.z = (table[i].size * 5);
+            symbol.style.fontSize = (table[i].size) + 'px'
+            targets.table.push( object );
+          }
+          //  创建整体盒子
+          renderer = new THREE.CSS3DRenderer();
+          renderer.setSize( window.innerWidth, window.innerHeight - 500 );
+          document.getElementById( ''+ ele +'' ).appendChild( renderer.domElement );
+          //
+          controls = new THREE.TrackballControls( camera, renderer.domElement );
+          controls.rotateSpeed = 0.5;
+          controls.minDistance = 500;
+          controls.maxDistance = 6000;
+          controls.addEventListener( 'change', render );
+          transform( targets.table, 2000 );
+          //
+          window.addEventListener( 'resize', onWindowResize, false );
+        }
+        function transform( targets, duration ) {
+          TWEEN.removeAll();
+          for ( var i = 0; i < objects.length; i ++ ) {
+            var object = objects[ i ];
+            var target = targets[ i ];
+            new TWEEN.Tween( object.position )
+              .to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+              .easing( TWEEN.Easing.Exponential.InOut )
+              .start();
+            new TWEEN.Tween( object.rotation )
+              .to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+              .easing( TWEEN.Easing.Exponential.InOut )
+              .start();
+          }
+          new TWEEN.Tween( this )
+            .to( {}, duration * 2 )
+            .onUpdate( render )
+            .start();
+        }
+        function onWindowResize() {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          render();
+        }
+        function animate() {
+          requestAnimationFrame( animate );
+          TWEEN.update();
+          controls.update();
+        }
+        function render() {
+          renderer.render( scene, camera );
+        }
+      }
+		</script>
+	</body>
+</html>

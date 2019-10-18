@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/htmlcharset=utf-8">
+		<title>Chronological Diagram of Asia</title>
+		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js"></script>
+		<style type="text/css">
+		.chart {
+			shape-rendering: crispEdges;
+		}
+
+		.mini text {
+			font: 9px sans-serif;
+		}
+		.brush .extent {
+			stroke: gray;
+			fill: dodgerblue;
+			fill-opacity: .365;
+		}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+		//data
+		var lanes = [],
+			laneLength = lanes.length,
+			items = [{"lane": 0, "id": "Qin", "time": '0801', 's':0},
+					{"lane": 0, "id": "Jin", "time": '0802', 's': 100},
+					{"lane": 0, "id": "Sui", "time": '0803', 's': 200},
+					{"lane": 0, "id": "Tang", "time": '0804', 's': 300},
+					{"lane": 0, "id": "Song", "time": '0805', 's': 400},
+					{"lane": 0, "id": "Yuan", "time": '0806', 's': 500},
+					{"lane": 0, "id": "Ming", "time": '0807', 's': 600},
+					{"lane": 0, "id": "Qing", "time": '0808', 's': 700},
+					{"lane": 0, "id": "Qin", "time": '0801', 's':800},
+					{"lane": 0, "id": "Jin", "time": '0802', 's': 900},
+					{"lane": 0, "id": "Sui", "time": '0803', 's': 1000},
+					{"lane": 0, "id": "Tang", "time": '0804', 's': 1100},
+					{"lane": 0, "id": "Song", "time": '0805', 's': 1200},
+					{"lane": 0, "id": "Yuan", "time": '0806', 's': 1300},
+					{"lane": 0, "id": "Ming", "time": '0807', 's': 1400},
+					{"lane": 0, "id": "Qing", "time": '0808', 's': 1500},
+					]
+			timeBegin = 0,
+			timeEnd = 2000
+		</script>
+		<script type="text/javascript">
+		var m = [20, 15, 15, 120], //top right bottom left
+			w = 960 - m[1] - m[3],
+			h = 30,
+			miniHeight = laneLength + 20,
+			mainHeight = h - miniHeight
+
+		//scales
+		var x = d3.scale.linear()
+				.domain([timeBegin, timeEnd])
+				.range([0, w])
+		var x1 = d3.scale.linear()
+				.range([0, w])
+		var y1 = d3.scale.linear()
+				.domain([0, laneLength])
+				.range([0, mainHeight])
+		var y2 = d3.scale.linear()
+				.domain([0, laneLength])
+				.range([0, miniHeight])
+
+		var chart = d3.select("body")
+					.append("svg")
+					.attr("width", w + m[1] + m[3])
+					.attr("height", h)
+					.attr("class", "chart")
+		
+		chart.append("defs").append("clipPath")
+			.attr("id", "clip")
+			.append("rect")
+			.attr("width", w)
+			.attr("height", mainHeight)
+
+		var mini = chart.append("g")
+					.attr("transform", "translate(" + m[3] + "," + 10 + ")")
+					.attr("width", w)
+					.attr("height", miniHeight)
+					.attr("class", "mini")
+		//mini lanes and texts // 图形上边框线条
+		mini.append("g").selectAll(".laneLines")
+			.data(items)
+			.enter().append("line")
+			.attr("x1", 0)
+			.attr("y1", function(d) {return y2(d.lane)})
+			.attr("x2", w)
+			.attr("y2", function(d) {return y2(d.lane)})
+			.attr("stroke", "lightgray")
+
+		//mini item rects  // 数值对应背景色长度
+		mini.append("g").selectAll("miniItems")
+			.data(items)
+			.enter().append("rect")
+			.attr("class", function(d) {return "miniItem" + d.lane})
+			.attr("height", 10)
+
+		//mini labels // 长条中显示的文字
+		mini.append("g").selectAll(".miniLabels")
+			.data(items)
+			.enter().append("text")
+			.text(function(d) {return d.time})
+			.attr("x", function(d) {
+				return x(d.s)
+			})
+
+		// //brush
+		var brush = d3.svg.brush()
+							.x(x)
+							.on("brush", display)
+
+		mini.append("g")
+			.attr("class", "x brush")
+			.call(brush)
+			.selectAll("rect")
+			.attr("y", 1)
+			.attr("height", miniHeight - 1)
+
+		display()
+		
+		function display() {
+			var rects, labels,
+				minExtent = brush.extent()[0],
+				maxExtent = brush.extent()[1],
+				visItems = items.filter(function(d) {return d.time < maxExtent && d.time > minExtent})
+
+			mini.select(".brush")
+				.call(brush.extent([minExtent, maxExtent]))
+
+			x1.domain([minExtent, maxExtent])
+
+		}
+		
+		</script>
+	</body>
+</html>

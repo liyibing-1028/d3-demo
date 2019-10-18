@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>three</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html, body {
+				height: 100%;
+			}
+			body {
+				margin: 0;
+				font-family: Helvetica, sans-serif;;
+				overflow: hidden;
+			}
+			a {
+				color: #ffffff;
+			}
+      #container {
+        background-color: #000000;
+      }
+			#info {
+				position: absolute;
+				width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family: Monospace;
+				font-size: 13px;
+				font-weight: bold;
+				text-align: center;
+				z-index: 1;
+			}
+			#menu {
+				position: absolute;
+				bottom: 520px;
+				width: 100%;
+				text-align: center;
+			}
+			.element {
+        padding: 10px;
+				text-align: center;
+				cursor: default;
+			}
+			.element:hover {
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+			}
+      .element .symbol {
+        font-size: 30px;
+        font-weight: bold;
+        color: rgba(255,255,255,0.75);
+        text-shadow: 0 0 10px rgba(0,255,255,0.95);
+      }
+			button {
+				color: rgba(127,255,255,0.75);
+				background: transparent;
+				outline: 1px solid rgba(127,255,255,0.75);
+				border: 0px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: rgba(0,255,255,0.5);
+			}
+			button:active {
+				color: #000000;
+				background-color: rgba(0,255,255,0.75);
+			}
+		</style>
+	</head>
+	<body>
+		<script src="./three/three.min.js"></script>
+		<script src="./three/tween.min.js"></script>
+		<script src="./three/TrackballControls.js"></script>
+		<script src="./three/CSS3DRenderer.js"></script>
+
+		<div id="container"></div>
+		<div id="menu">
+    </div>
+
+		<script>
+			var table = [
+        // '赌博', 30, '', 1, 1,
+        // '裸贷', 30, '', 2, 1,
+        // 'AV', 30, '', 3, 1,
+        // '腐败', 30, '', 4, 1,
+        // '贷款', 30, '', 5, 1,
+        // '涉黑', 30, '', 6, 1,
+        // '毒品', 30, '', 7, 1,
+        // '霸凌', 30, '', 8, 1,
+        // '暴力', 30, '', 9, 1,
+        // '三陪', 30, '', 10, 1,
+        // '敲诈', 30, '', 1, 2,
+        // '欺凌', 30, '', 2, 2,
+        // '勒索', 30, '', 3, 2,
+        // '兼职', 30, '', 4, 2,
+        // '猥亵', 30, '', 5, 2,
+        // '犯罪', 30, '', 6, 2,
+        // '歧视', 30, '', 7, 2,
+        // '诈骗', 30, '', 8, 2,
+        // '宗教', 30, '', 9, 2,
+        // '三级', 30, '', 10, 2,
+        // '上访', 30, '', 1, 3,
+        // '下体', 30, '', 2, 3,
+        // '下贱', 30, '', 3, 3,
+        // '专政', 30, '', 4, 3,
+        // '中共', 30, '', 5, 3,
+        // '中央', 30, '', 6, 3,
+        // '中朝', 30, '', 7, 3,
+        // '亚热', 30, '', 8, 3,
+        // '亲日', 30, '', 9, 3,
+        // '亲美', 30, '', 10, 3,
+        // '人渣', 30, '', 1, 4,
+        // '人肉', 30, '', 2, 4,
+        // '仿真', 30, '', 3, 4,
+        // '你妈', 30, '', 4, 4,
+        // '保监', 30, '', 5, 4,
+        // '做爱', 30, '', 6, 4,
+        // '偷窥', 30, '', 7, 4,
+        // '傻逼', 30, '', 8, 4,
+        // '党中', 30, '', 9, 4,
+        // '公款', 30, '', 10, 4,
+        // '六合', 30, '', 1, 5,
+        // '共产', 30, '', 2, 5,
+        // '内幕', 30, '', 3, 5,
+        // '分裂', 30, '', 4, 5,
+        // '分裂', 30, '', 5, 5,
+        // '劣等', 30, '', 6, 5,
+        // '动乱', 30, '', 7, 5,
+        // '包夜', 30, '', 8, 5,
+        // '北韩', 30, '', 9, 5,
+        // '卖国', 30, '', 10, 5,
+        // '反华', 30, '', 1, 6,
+        // '反社', 30, '', 2, 6,
+        // '反革', 30, '', 3, 6,
+        // '叫床', 30, '', 4, 6,
+        // '台独', 30, '', 5, 6,
+        // '台湾', 30, '', 6, 6,
+        // '国贼', 30, '', 7, 6,
+        // '圣战', 30, '', 8, 6,
+        // '外围', 30, '', 9, 6,
+        // '大麻', 30, '', 10, 6,
+        {text: '快感', size: 30, content: '', x: 1, y: 7},
+        {text: '狼友', size: 30, content: '', x: 2, y: 7},
+        {text: '我草', size: 30, content: '', x: 3, y: 7},
+        {text: '打压', size: 30, content: '', x: 4, y: 7},
+        {text: '政变', size: 30, content: '', x: 5, y: 7},
+        {text: '救市', size: 30, content: '', x: 6, y: 7},
+        {text: '无耻', size: 30, content: '', x: 7, y: 7},
+        {text: '星相', size: 30, content: '', x: 8, y: 7},
+        {text: '民猪', size: 30, content: '', x: 9, y: 7},
+        {text: '淫女', size: 30, content: '', x: 10, y: 7},
+        {text: '点金', size: 30, content: '', x: 1, y: 8},
+        {text: '激情', size: 30, content: '', x: 2, y: 8},
+        {text: '炮友', size: 30, content: '', x: 3, y: 8},
+        {text: '示威', size: 30, content: '', x: 4, y: 8},
+        {text: '红灯', size: 30, content: '', x: 5, y: 8},
+        {text: '在线赌博', size: 70, content: '', x: 6, y: 8},
+        {text: '付费直播', size: 70, content: '', x: 7, y: 8},
+        {text: '福利网址', size: 70, content: '', x: 8, y: 8},
+        {text: '东京热', size: 50, content: '', x: 9, y: 8},
+        {text: '黑社会', size: 50, content: '', x: 10, y: 8},
+        {text: '恶势力', size: 50, content: '', x: 1, y: 9},
+        {text: '套路贷', size: 50, content: '', x: 2, y: 9},
+        {text: '学生妹', size: 50, content: '', x: 3, y: 9},
+        {text: '性骚扰', size: 50, content: '', x: 4, y: 9},
+        {text: '性取向', size: 50, content: '', x: 5, y: 9},
+        {text: '中宣部', size: 50, content: '', x: 6, y: 9},
+        {text: '中纪委', size: 50, content: '', x: 7, y: 9},
+        {text: '仿真枪', size: 50, content: '', x: 8, y: 9},
+        {text: '你他妈', size: 50, content: '', x: 9, y: 9},
+        {text: '你妈的', size: 50, content: '', x: 10, y: 9},
+        {text: '保监会', size: 50, content: '', x: 1, y: 10},
+        {text: '六合彩', size: 50, content: '', x: 2, y: 10},
+        {text: '共产党', size: 50, content: '', x: 3, y: 10},
+        {text: '党中央', size: 50, content: '', x: 4, y: 10},
+        {text: '反社会', size: 50, content: '', x: 5, y: 10},
+        {text: '台湾狗', size: 50, content: '', x: 6, y: 10},
+        {text: '反革命', size: 50, content: '', x: 7, y: 10},
+        {text: '红灯区', size: 50, content: '', x: 8, y: 10},
+        {text: '成人片', size: 50, content: '', x: 9, y: 10},
+        {text: '伊拉克', size: 50, content: '', x: 10, y: 10},
+        {text: '包二奶', size: 50, content: '', x: 1, y: 6},
+        {text: '低制', size: 30, content: '', x: 2, y: 6},
+        {text: '体位', size: 30, content: '', x: 3, y: 6},
+        {text: '何平', size: 30, content: '', x: 4, y: 6},
+        {text: '作爱', size: 30, content: '', x: 5, y: 6},
+        {text: '偷情', size: 30, content: '', x: 6, y: 6},
+        {text: '偷拍', size: 30, content: '', x: 7, y: 6},
+        {text: '傻比', size: 30, content: '', x: 8, y: 6},
+        {text: '八老', size: 30, content: '', x: 9, y: 6},
+        {text: '内裤', size: 30, content: '', x: 10, y: 6}
+			]
+      var camera, scene, rend, erer;
+			var controls;
+			var objects = [];
+			var group = new THREE.Object3D()
+			var group2 = new THREE.Object3D()
+			var group3 = new THREE.Object3D()
+			var group4 = new THREE.Object3D()
+			var group5 = new THREE.Object3D()
+			var group6 = new THREE.Object3D()
+			var targets = { table: [], sphere: [], helix: [], grid: [] };
+			init();
+			animate();
+			function init() {
+				camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.z = 5000;
+				scene = new THREE.Scene();
+				function setBox (groupBox, x, y, xP, yP, zP) {
+					// table
+					for ( var i = 0; i < table.length; i++ ) {
+						var element = document.createElement( 'div' );
+						element.className = 'element';
+						// element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
+						var symbol = document.createElement( 'div' );
+						symbol.className = 'symbol';
+						symbol.textContent = table[i].text;
+						element.appendChild( symbol );
+						// 初始化随机位置
+						var object = new THREE.CSS3DObject( element );
+						object.position.x = Math.random() * 4000 - 2000;
+						object.position.y = Math.random() * 4000 - 2000;
+						object.position.z = Math.random() * 4000 - 2000;
+						// object.rotation.y = -90;
+						groupBox.add(object)
+						objects.push( object );
+						// 分布到指定位置
+						var object = new THREE.Object3D();
+						object.position.x = ( table[i].x * 100 ) - (window.innerWidth / 2);
+						object.position.y = - ( table[i].y * 40 ) + (window.innerHeight / 2 - 200);
+						object.position.z = (table[i].size * 5);
+						// object.rotation.y = -90;
+						symbol.style.fontSize = (table[i].size) + 'px'
+						targets.table.push( object );
+					}
+					scene.add( groupBox )
+					groupBox.position.x = xP;
+					groupBox.position.y = yP;
+					groupBox.position.z = zP;
+					groupBox.rotation.x = x;
+					groupBox.rotation.y = y;
+					// groupBox.rotation.z = 2;
+				}
+				setBox(group, 0, 1.45, 1000, 0, 0) // 右
+				setBox(group2, 0, -1.45, -1000, 0, 0)  // 左
+				setBox(group3, 1.45, 0, 0, 1000, 0)  // 上
+				setBox(group4, -1.45, 0, 0, -1000, 0)  // 下
+				setBox(group5, 0, 0, 0, 0, 1000)   // 前
+				setBox(group6, 2.9, 0, 0, 0, -1000)  // 后
+				//  创建整体盒子
+				renderer = new THREE.CSS3DRenderer();
+				// console.log('renderer', renderer)
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.getElementById( 'container' ).appendChild( renderer.domElement );
+				//
+				controls = new THREE.TrackballControls( camera, renderer.domElement );
+				controls.rotateSpeed = 0.5;
+				controls.minDistance = 500;
+				controls.maxDistance = 6000;
+				controls.addEventListener( 'change', render );
+				transform( targets.table, 2000 );
+				//
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+			function transform( targets, duration ) {
+				TWEEN.removeAll();
+				for ( var i = 0; i < objects.length; i ++ ) {
+					var object = objects[ i ];
+					var target = targets[ i ];
+					new TWEEN.Tween( object.position )
+						.to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
+					new TWEEN.Tween( object.rotation )
+						.to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
+				}
+				new TWEEN.Tween( this )
+					.to( {}, duration * 2 )
+					.onUpdate( render )
+					.start();
+			}
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				render();
+			}
+			function animate() {
+				requestAnimationFrame( animate );
+				TWEEN.update();
+				controls.update();
+				// group.rotation.y += 0.01
+				// console.log(group.rotation)
+			}
+			function render() {
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		.brush-label {
+		}
+
+		.brush-label text {
+			fill: red;
+			font-size: 12px;
+		}
+
+		.brush-label rect {
+			fill: #f3f3f3;
+		}
+	</style>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+	<svg></svg>
+	<script type="text/javascript">
+
+var paper = {
+	width: 960,
+	height: 100,
+	padding: [10, 10, 25, 10]
+}
+
+var svg = d3.select("svg")
+	.attr('width', paper.width)
+	.attr('height', paper.height)
+
+var width = paper.width - paper.padding[3] - paper.padding[1],
+    height = paper.height - paper.padding[0] - paper.padding[2];
+
+var x = d3.scaleTime('MM').range([0, width]),
+    y = d3.scaleLinear().range([height, 0]);
+
+var xAxis = d3.axisBottom(x)
+			.ticks(d3.timeMonth.every(1))
+			.tickFormat((t) => {
+				return setTimeChange(t)
+			})
+// 设置时间转化
+function setTimeChange (t) {
+	let year = new Date(t).getFullYear()
+	let month = new Date(t).getMonth() + 1 < 10 ? '0' + (new Date(t).getMonth() + 1) : new Date(t).getMonth() + 1
+	let date = new Date(t).getDate() < 10 ? '0' + new Date(t).getDate() : new Date(t).getDate()
+	return year + '-' + month + '-' + date
+}
+var brush = d3.brushX()
+    .extent([[0, 0], [width, height]])
+    .on("brush", brush)
+    .on("end", brushed)
+
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+var context = svg.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + paper.padding[3] + "," + paper.padding[0] + ")");
+
+x.domain([1518307114269, 1534306114269])
+y.domain([0, 1])
+
+context.append("g")
+  .attr("class", "axis axis--x")
+  .attr("transform", "translate(0," + height + ")")
+  .call(xAxis)
+
+context.append("g")
+  .attr("class", "brush")
+  .call(brush)
+  .call(brush.move, x.range())
+
+var leftLable = d3.select('.brush')
+	.append('g')
+	.attr('class', 'brush-label')
+
+leftLable.append('rect')
+	.attr('x', 0)
+	.attr('y', 0)
+	.attr('width', 82)
+	.attr('height', 20)
+
+leftLable.append('text')
+	.attr('x', 5)
+	.attr('y', 14)
+	.text(setTimeChange(x.domain()[0]))
+
+var rightLable = d3.select('.brush')
+	.append('g')
+	.attr('class', 'brush-label')
+	.attr("transform", "translate(" + (width - 82) + ", 0)")
+
+rightLable.append('rect')
+	.attr('x', 0)
+	.attr('y', 0)
+	.attr('width', 82)
+	.attr('height', 20)
+
+rightLable.append('text')
+	.attr('x', 5)
+	.attr('y', 14)
+	.text(setTimeChange(x.domain()[1]))
+
+function brush() {
+	if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
+	var s = d3.event.selection || x.range();
+	if (s[0] <= 100) {
+		leftLable && leftLable.attr("transform", "translate(" + s[0] + ", 0)")
+	} else {
+		leftLable && leftLable.attr("transform", "translate(" + (s[0] - 82) + ", 0)")
+	}
+
+	if (s[1] <= width - 100) {
+		rightLable && rightLable.attr("transform", "translate(" + s[1] + ", 0)")
+	} else {
+		rightLable && rightLable.attr("transform", "translate(" + (s[1] - 82) + ", 0)")
+	}
+}
+
+function brushed() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
+  var s = d3.event.selection || x.range();
+  // 这是输出
+  console.log(s.map(x.invert, x))
+}
+	</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8"/>
+      <title>MapBox</title>
+      <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
+      <script src="./node_modules/mapbox-gl/dist/mapbox-gl.js"></script>
+      <link href="./node_modules/mapbox-gl/dist/mapbox-gl.css"/>
+      <style>
+          body { 
+            margin:0;
+            padding:0;
+          }
+          #map { position:absolute; top:0; bottom:0; width:100%; }
+          #canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            z-index: 1;
+            pointer-events: none;
+          }
+      </style>
+  </head>
+  <body>
+    <div id='map'></div>
+    <div id="canvas"></div>
+    <script src="./node_modules/pixi.js/dist/pixi.min.js"></script>
+    <script type="text/javascript" src="./node_modules/d3/dist/d3.min.js"></script>
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1IjoienhjdmJubTAwIiwiYSI6ImNqajEzNzFqdjA2YmczdnRiMmYyemdkY2oifQ.JfRiN6AVSiNTjkneS0EAmg';
+      var map = new mapboxgl.Map({
+          container: 'map',
+          style: 'mapbox://styles/zxcvbnm00/cjpxx5hhk3lcf2spbkrygov9b',
+          center: [160, 10.72],
+          zoom: 1.9,
+          maxZoom: 16,
+          pitch: 0,
+          bearing: 0
+      });
+      
+      map.on('load', function() {
+        map.setPaintProperty('building', 'fill-color', [
+            "interpolate",
+            ["exponential", 0.5],
+            ["zoom"],
+            15,
+            "#e2714b",
+            22,
+            "#eee695"
+        ]);
+        map.setPaintProperty('building', 'fill-opacity', [
+            "interpolate",
+            ["exponential", 0.5],
+            ["zoom"],
+            15,
+            0,
+            22,
+            1
+          ]);
+      });
+
+      var box = document.getElementById('canvas')
+      let W = box.offsetWidth - 30
+      let H = box.offsetHeight - 30
+      var renderer = new PIXI.Application(W, H, {
+        antialias: true,
+        transparent: true
+      })
+      map.on('movestart', function () {
+        if (box.contains(renderer.view)) {
+          box.removeChild(renderer.view)
+          renderer.ticker.remove()
+          renderer.stage.children = []
+        }
+      })
+      map.on('moveend', function () {
+        init()
+      })
+      
+      function init () {
+        function getD3 () {
+          var bbox = document.body.getBoundingClientRect()
+          var center = map.getCenter()
+          var zoom = map.getZoom()
+          var scale = (512) * 0.5 / Math.PI * Math.pow(2, zoom)
+          var d3projection = d3.geoMercator()
+            .center([center.lng, center.lat])
+            .translate([bbox.width / 2, document.documentElement.clientHeight / 2])
+            .scale(scale)
+          return d3projection
+        }
+        let setPst = getD3()
+
+        var canvas = document.createElement('canvas')
+        canvas.width = W
+        canvas.height = H
+        canvas.fillStyle = '#fff'
+        let context = canvas.getContext('2d')
+
+        box.appendChild(renderer.view)
+
+        // window.requestAnimationFrame(update)
+        var start = +new Date()
+        var points = []
+        renderer.ticker.add(function () {
+          var current = +new Date()
+          if (current - start > 1) {
+            // add point
+            if (arr.length < 10) {
+              arr = arrCopy
+            }
+            var d = arr.shift()
+            arrCopy.push(d)
+            var graphics = new PIXI.Graphics()
+            graphics.lineStyle(0)
+            graphics.beginFill(0xf02b7b, 1)
+            graphics.drawCircle(0, 0, 10)
+            graphics.endFill()
+            graphics.scale.set(0)
+            graphics.alpha = 0
+            graphics.position.x = d.x
+            graphics.position.y = d.y
+            graphics.blendMode = PIXI.BLEND_MODES.ADD
+            renderer.stage.addChild(graphics)
+            points.push({
+              dom: graphics,
+              times: 0
+            })
+            start = current
+          }
+          for (var i = 0; i < points.length; i++) {
+            var p = points[i]
+            p.times = p.times + 0.01
+            p.dom.scale.set(p.times)
+            p.dom.alpha = Math.cos(p.times * (Math.PI / 2))
+            if (p.times > 1) {
+              renderer.stage.removeChild(p.dom)
+              points.shift()
+            }
+          }
+        })
+      }
+      init()
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,6 @@
+node_modules/*
+logs/*
+.remote-sync.json
+sftp-config.json
+.DS_Store
+.ftpconfig
